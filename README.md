@@ -1,11 +1,11 @@
 # Kiwix Monthly Backup Scripts
 
-Automated backup system for Wikipedia ZIM files and Kiwix applications. Manages up to 1.8TB of monthly Wikipedia archives with automatic rotation.
+Automated backup system for Wikipedia ZIM files and Kiwix applications. Manages monthly Wikipedia archives with automatic rotation based on storage space.
 
 ## Features
 
 - ✅ **Monthly Wikipedia ZIM Downloads** - Automatically fetches latest Wikipedia dumps
-- ✅ **Smart Storage Management** - Keeps up to 1.8TB with automatic rotation of old backups
+- ✅ **Smart Storage Management** - Set max storage and script will manage space with automatic rotation of old backups
 - ✅ **Kiwix Applications** - Downloads Windows, Linux, and server binaries
 - ✅ **Source Code Mirroring** - Clones all necessary GitHub repositories
 - ✅ **Offline Build Support** - Downloads Ubuntu .deb packages for offline compilation
@@ -31,7 +31,7 @@ sudo apt install -y wget curl git jq unzip
 
 Edit `wikipediaDL.sh` and set your paths:
 ```bash
-STORAGE_DIR="/wiki/kiwix/zim"     # Where ZIM files are stored (needs ~1.8TB)
+STORAGE_DIR="/wiki/kiwix/zim"     # Where ZIM files are stored
 REPOS_DIR="/wiki/kiwix/repos"     # Git repos
 BIN_DIR="/wiki/kiwix/apps"        # Downloaded binaries
 ```
@@ -92,18 +92,17 @@ sudo bash install-kiwix-build-deps.sh
 
 ## Storage Requirements
 
-- **ZIM Files**: ~1.8TB (18-19 months of backups @ ~100GB/month)
+- **ZIM Files**: backups @ ~100GB/month
 - **Applications**: ~2-5GB
 - **Source Repos**: ~500MB-1GB
 - **Build Packages**: ~500MB-1GB
-- **Total**: ~1.85TB recommended
 
 ## Configuration Options
 
 Edit `wikipediaDL.sh` to customize:
 
 ```bash
-MAX_BYTES=$((1800 * 1024 * 1024 * 1024))  # Storage cap (1.8TB)
+MAX_BYTES=$((1800 * 1024 * 1024 * 1024))  # Storage cap (1.8TB) change as needed
 
 ZIM_BASENAME="wikipedia_en_all_maxi"       # ZIM type to download
 # Options: wikipedia_en_all_maxi (full with images)
