@@ -298,13 +298,6 @@ if [ -n "$KIWIX_TOOLS_WIN" ] && [ ! -f "$KIWIX_TOOLS_WIN" ]; then
   curl -fSL -o "$KIWIX_TOOLS_WIN" "${KIWIX_TOOLS_BASE}/${KIWIX_TOOLS_WIN}" || log "ERROR: Failed to download Windows kiwix-tools"
 fi
 
-# Download kiwix-tools (Windows i686/32-bit)
-KIWIX_TOOLS_WIN32=$(curl -fsSL "${KIWIX_TOOLS_BASE}/" | grep -oE 'kiwix-tools_win-i686-[0-9.]+\.zip' | sort -V | tail -1)
-if [ -n "$KIWIX_TOOLS_WIN32" ] && [ ! -f "$KIWIX_TOOLS_WIN32" ]; then
-  log "Downloading $KIWIX_TOOLS_WIN32"
-  curl -fSL -o "$KIWIX_TOOLS_WIN32" "${KIWIX_TOOLS_BASE}/${KIWIX_TOOLS_WIN32}" || log "ERROR: Failed to download Windows kiwix-tools i686"
-fi
-
 # Download kiwix-desktop (Windows .exe, Linux AppImage, and .deb)
 download_latest_asset "kiwix/kiwix-desktop" "\.(exe|AppImage|deb)$" "Desktop app for Windows and Linux"
 
@@ -317,95 +310,5 @@ download_latest_asset "kiwix/kiwix-android" "\.apk$" "Android APK"
 
 log "Saving copy of Kiwix applications page…"
 curl -fsSL "https://kiwix.org/en/applications/" -o "kiwix-applications-page.html" 2>&1 | tee -a "$LOGFILE" || log "Warning: Failed to save applications page"
-
-# =====================================================================
-# 6) Download build dependency .deb packages (x86_64 only)
-# =====================================================================
-log "Downloading build dependency packages (Ubuntu x86_64)…"
-
-DEBS_DIR="${BIN_DIR}/ubuntu-debs"
-mkdir -p "$DEBS_DIR"
-cd "$DEBS_DIR"
-
-# List of build dependencies for compiling Kiwix from source
-BUILD_DEPS=(
-  "build-essential"
-  "cmake"
-  "pkg-config"
-  "meson"
-  "ninja-build"
-  "liblz4-dev"
-  "libzstd-dev"
-  "libxapian-dev"
-  "libicu-dev"
-  "libcurl4-openssl-dev"
-  "libmicrohttpd-dev"
-  "libevent-dev"
-  "libfmt-dev"
-  "libctpl-dev"
-  "git"
-  "wget"
-  "curl"
-)
-
-# Ubuntu releases to download packages for
-UBUNTU_RELEASES=("jammy" "noble")  # Ubuntu 22.04 LTS and 24.04 LTS
-ARCH="amd64"
-
-download_deb_package() {
-  local package="$1"
-  local release="$2"
-  local arch="$3"
-  local release_dir="$4"
-  
-  log "Fetching package info for: $package (${release})"
-  
-  # Try main Ubuntu archive first
-  local base_url="http://archive.ubuntu.com/ubuntu/pool"
-  local search_url="https://packages.ubuntu.com/${release}/${arch}/${package}/download"
-  
-  # Get package download URL
-  local deb_url
-  deb_url=$(curl -fsSL "$search_url" 2>/dev/null | grep -oE "http://[^\"']+\.deb" | head -1)
-  
-  if [ -z "$deb_url" ]; then
-    log "Warning: Could not find download URL for $package (${release})"
-    return 1
-  fi
-  
-  local deb_file
-  deb_file=$(basename "$deb_url")
-  
-  # Save to release-specific directory
-  if [ -f "${release_dir}/${deb_file}" ]; then
-    log "Already have: $deb_file"
-    return 0
-  fi
-  
-  log "Downloading: $deb_file"
-  if curl -fSL -o "${release_dir}/${deb_file}" "$deb_url"; then
-    log "✓ Downloaded: $deb_file"
-  else
-    log "ERROR: Failed to download $deb_file"
-    rm -f "${release_dir}/${deb_file}"
-    return 1
-  fi
-}
-
-# Download packages for each Ubuntu release
-for release in "${UBUNTU_RELEASES[@]}"; do
-  log "Processing packages for Ubuntu ${release}..."
-  release_dir="${DEBS_DIR}/${release}"
-  mkdir -p "$release_dir"
-  
-  for pkg in "${BUILD_DEPS[@]}"; do
-    download_deb_package "$pkg" "$release" "$ARCH" "$release_dir" || true
-  done
-done
-
-log "Build dependency packages saved to: $DEBS_DIR"
-log "Ubuntu 22.04 packages: ${DEBS_DIR}/jammy/"
-log "Ubuntu 24.04 packages: ${DEBS_DIR}/noble/"
-log "To install offline: cd ${DEBS_DIR}/<release>/ && sudo dpkg -i *.deb; sudo apt-get install -f"
 
 log "=== END KIWIX MONTHLY BACKUP ==="
