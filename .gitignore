@@ -1,0 +1,31 @@
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.part
+*.swp
+*~
+
+# Downloaded binaries and archives
+*.tar.gz
+*.zip
+*.deb
+*.exe
+*.apk
+*.AppImage
+*.msi
+*.appx
+*.msix
+
+# ZIM files (large Wikipedia archives)
+*.zim
+*.zim.sha256
+*.zim.sha256.norm
+
+# HTML snapshots
+*.html
+
+# OS generated files
+.DS_Store
+Thumbs.db
