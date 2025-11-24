@@ -2,6 +2,8 @@
 
 Automated backup system for Wikipedia ZIM files and Kiwix applications. Manages up to 1.8TB of monthly Wikipedia archives with automatic rotation.
 
+Created Using AI, reviewed and tested by me.
+
 ## Features
 
 - ✅ **Monthly Wikipedia ZIM Downloads** - Automatically fetches latest Wikipedia dumps
